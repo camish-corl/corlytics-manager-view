@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Corlytics Dashboard</title>
+    <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica', sans-serif;
+            background-color: #f5f8fa;
+        }
+
+        /* Dashboard Container */
+        .dashboard-container {
+            display: flex;
+            width: 100%;
+            height: 100vh;
+        }
+
+        /* Left Navigation Sidebar */
+        .nav-sidebar {
+            width: 215px;
+            background-color: #2c5c65;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .nav-header {
+            padding: 20px 15px 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .user-name {
+            font-weight: 700;
+            font-size: 13.1px;
+            line-height: 19.68px;
+            margin: 0;
+        }
+
+        .nav-menu {
+            padding: 12px 10px;
+        }
+
+        .menu-section {
+            margin-bottom: 12px;
+        }
+
+        .section-header {
+            padding: 13px 0 0;
+            opacity: 0.4;
+        }
+
+        .section-title {
+            font-weight: 700;
+            font-size: 12px;
+            line-height: 18px;
+            text-transform: uppercase;
+            margin: 0;
+        }
+
+        .menu-items {
+            padding: 0;
+            margin: 0;
+        }
+
+        .menu-item {
+            font-weight: 400;
+            font-size: 13px;
+            line-height: 19.5px;
+            padding: 5px 12px 5px 0;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .menu-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .menu-item.active {
+            font-weight: 700;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: #ffffff;
+        }
+
+        /* Header */
+        .header {
+            height: 55px;
+            background-color: #ffffff;
+            border-bottom: 1px solid #f0f3f5;
+            box-shadow: 0px 2px 4px -2px rgba(16, 24, 40, 0.06), 0px 4px 8px -2px rgba(16, 24, 40, 0.1);
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 13px;
+            line-height: 19.5px;
+            color: #212529;
+            text-transform: uppercase;
+        }
+
+        .divider {
+            width: 1px;
+            height: 24px;
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+
+        .page-title {
+            font-weight: 700;
+            font-size: 13px;
+            line-height: 19.5px;
+            color: #212529;
+            text-transform: uppercase;
+        }
+
+        /* Breadcrumbs */
+        .breadcrumbs {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            background-color: #ffffff;
+        }
+
+        .breadcrumb-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .breadcrumb-link {
+            font-weight: 700;
+            font-size: 12px;
+            line-height: 18px;
+            color: #2c5c65;
+            text-decoration: underline;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+
+        .breadcrumb-text {
+            font-weight: 700;
+            font-size: 12px;
+            line-height: 18px;
+            color: #212529;
+            text-transform: uppercase;
+        }
+
+        /* Content Area */
+        .content-area {
+            flex: 1;
+            padding: 0 15px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            margin: 0 2.5px;
+            box-shadow: 0px 2px 4px -2px rgba(16, 24, 40, 0.06), 0px 4px 8px -2px rgba(16, 24, 40, 0.1);
+        }
+
+        .content-header {
+            padding: 20px 5px 0;
+        }
+
+        .page-navigation {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            font-weight: 400;
+            font-size: 13px;
+            line-height: 19.5px;
+            color: #2c5c65;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        /* Content Body */
+        .content-body {
+            padding: 30px 15px;
+        }
+
+        .page-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-subtitle {
+            font-weight: 700;
+            font-size: 13px;
+            line-height: 19.5px;
+            color: #212529;
+        }
+
+        .page-title h1 {
+            font-weight: 400;
+            font-size: 16px;
+            line-height: 24px;
+            color: #212529;
+            text-align: center;
+            margin: 0;
+        }
+
+        .page-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* Buttons */
+        .btn {
+            font-weight: 700;
+            font-size: 12px;
+            line-height: 18px;
+            text-transform: uppercase;
+            padding: 6px 12px;
+            border: 1px solid;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background-color: #2c5c65;
+            border-color: #2c5c65;
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            background-color: #1e4a52;
+            border-color: #1e4a52;
+        }
+
+        .btn-secondary {
+            background-color: #888888;
+            border-color: #888888;
+            color: #ffffff;
+        }
+
+        .btn-secondary:hover {
+            background-color: #666666;
+            border-color: #666666;
+        }
+
+        .btn-small {
+            font-size: 12px;
+            padding: 4px 8px;
+        }
+
+        .btn-danger {
+            background-color: #fd4748;
+            border-color: #fd4748;
+            color: #ffffff;
+        }
+
+        .btn-danger:hover {
+            background-color: #e63939;
+            border-color: #e63939;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 30px;
+        }
+
+        /* Form Section */
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            font-weight: 400;
+            font-size: 13px;
+            line-height: 19.5px;
+            color: #212529;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 669px;
+            height: 32px;
+            background-color: #ffffff;
+            border: 1px solid #7c858c;
+            border-radius: 8px;
+            padding: 5px 12px;
+            font-weight: 400;
+            font-size: 14px;
+            line-height: 22px;
+            color: rgba(0, 0, 0, 0.85);
+        }
+
+        .select-container {
+            width: 669px;
+        }
+
+        .select-input {
+            width: 100%;
+            height: 32px;
+            background-color: #ffffff;
+            border: 1px solid #7c858c;
+            border-radius: 8px;
+            padding: 5px 12px;
+            display: flex;
+            align-items: center;
+            font-weight: 400;
+            font-size: 13px;
+            line-height: 19.5px;
+            color: #000000;
+        }
+
+        .selected-chips {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .chip {
+            background-color: #10b4bd;
+            color: #ffffff;
+            padding: 4px 6px;
+            border-radius: 360px;
+            font-weight: 600;
+            font-size: 12px;
+            line-height: 16px;
+        }
+
+        /* Sources Section */
+        .sources-section {
+            margin-bottom: 30px;
+        }
+
+        .sources-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .sources-header span:first-child {
+            font-weight: 400;
+            font-size: 13px;
+            line-height: 19.5px;
+            color: #212529;
+        }
+
+        .sources-count {
+            font-weight: 400;
+            font-size: 13px;
+            line-height: 19.5px;
+            color: #7c858c;
+        }
+
+        /* Region Sections */
+        .region-section {
+            margin-bottom: 20px;
+        }
+
+        .region-header {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            padding: 0 15px;
+            cursor: pointer;
+        }
+
+        .region-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 14px;
+            line-height: 18px;
+            color: #344250;
+        }
+
+        .alert-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            background-color: #fd4748;
+            border-radius: 50%;
+            opacity: 0.01;
+        }
+
+        .region-content {
+            background-color: #f5f8fa;
+            border: 1px solid #bfd1e2;
+            border-radius: 8px;
+            margin: 28px 0 0 15px;
+            padding: 15px;
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .content-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 14px;
+            line-height: 18px;
+            color: #344250;
+        }
+
+        .content-stats {
+            font-weight: 400;
+            font-size: 13px;
+            line-height: 19.5px;
+            color: #212529;
+        }
+
+        .content-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        /* Document List */
+        .document-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .document-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 0;
+        }
+
+        .document-item.selected {
+            background-color: rgba(24, 144, 255, 0.1);
+        }
+
+        .checkbox {
+            width: 16px;
+            height: 16px;
+            border: 1px solid #7c858c;
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .checkbox.checked {
+            background-color: #1890ff;
+            border-color: #1890ff;
+        }
+
+        .document-icon {
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .document-title {
+            font-weight: 400;
+            font-size: 13px;
+            line-height: 24px;
+            color: #000000;
+            flex: 1;
+        }
+
+        .indent {
+            width: 38px;
+            height: 10px;
+            background-color: rgba(217, 217, 217, 0);
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 30px;
+        }
+
+        .pagination-btn {
+            width: 32px;
+            height: 32px;
+            background-color: #ffffff;
+            border: 1px solid #dddddd;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 400;
+            font-size: 13px;
+            line-height: 16.25px;
+            color: #00686e;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .pagination-btn:hover {
+            background-color: #f5f8fa;
+            border-color: #00686e;
+        }
+
+        .pagination-btn.active {
+            background-color: #2c5c65;
+            border-color: #2c5c65;
+            color: #ffffff;
+        }
+
+        .pagination-ellipsis {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 14px;
+            height: 4px;
+            color: #00686e;
+        }
+
+        /* Footer */
+        .footer {
+            height: 30px;
+            background-color: #f0f3f5;
+            border-top: 1px solid #c2cfd6;
+            display: flex;
+            align-items: center;
+            padding: 7px 30px 0 30px;
+        }
+
+        .footer-content {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: 400;
+            font-size: 12.8px;
+            line-height: 19.2px;
+            color: #212529;
+        }
+
+        .footer-link {
+            color: #2c5c65;
+            text-decoration: underline;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .nav-sidebar {
+                width: 200px;
+            }
+            
+            .form-input,
+            .select-container {
+                width: 100%;
+                max-width: 500px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                flex-direction: column;
+            }
+            
+            .nav-sidebar {
+                width: 100%;
+                height: auto;
+                max-height: 300px;
+            }
+            
+            .main-content {
+                flex: 1;
+            }
+            
+            .page-info {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+            
+            .action-buttons {
+                flex-wrap: wrap;
+            }
+            
+            .content-header {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Left Navigation -->
+        <div class="nav-sidebar">
+            <div class="nav-header">
+                <div class="user-info">
+                    <p class="user-name">Camelia Popa</p>
+                </div>
+            </div>
+            
+            <div class="nav-menu">
+                <div class="menu-section">
+                    <div class="section-header">
+                        <p class="section-title">Content</p>
+                    </div>
+                    <div class="menu-items">
+                        <div class="menu-item">Regulators</div>
+                        <div class="menu-item">Obligation Terms</div>
+                        <div class="menu-item">Regulators Export</div>
+                        <div class="menu-item">Documents</div>
+                        <div class="menu-item">BOT Health</div>
+                    </div>
+                </div>
+
+                <div class="menu-section">
+                    <div class="section-header">
+                        <p class="section-title">Regulations</p>
+                    </div>
+                    <div class="menu-items">
+                        <div class="menu-item">Content Providers</div>
+                        <div class="menu-item">Regulation Content Editor</div>
+                        <div class="menu-item">Regulation Access Group</div>
+                    </div>
+                </div>
+
+                <div class="menu-section">
+                    <div class="section-header">
+                        <p class="section-title">Regulation Library</p>
+                    </div>
+                    <div class="menu-items">
+                        <div class="menu-item">Bulk add regulations</div>
+                        <div class="menu-item">Metadata</div>
+                    </div>
+                </div>
+
+                <div class="menu-section">
+                    <div class="section-header">
+                        <p class="section-title">Internal Controls</p>
+                    </div>
+                    <div class="menu-items">
+                        <div class="menu-item">Standard Fields</div>
+                        <div class="menu-item">Custom Fields</div>
+                    </div>
+                </div>
+
+                <div class="menu-section">
+                    <div class="section-header">
+                        <p class="section-title">Content Automation</p>
+                    </div>
+                    <div class="menu-items">
+                        <div class="menu-item">Classification Models</div>
+                        <div class="menu-item">Models Dashboard</div>
+                    </div>
+                </div>
+
+                <div class="menu-section">
+                    <div class="section-header">
+                        <p class="section-title">Taxonomy</p>
+                    </div>
+                    <div class="menu-items">
+                        <div class="menu-item active">Taxonomy Manager</div>
+                        <div class="menu-item">Client Taxonomies</div>
+                        <div class="menu-item">Edit Themes</div>
+                        <div class="menu-item">All Dashboards</div>
+                    </div>
+                </div>
+
+                <div class="menu-section">
+                    <div class="section-header">
+                        <p class="section-title">Clients</p>
+                    </div>
+                    <div class="menu-items">
+                        <div class="menu-item">Tagging Report</div>
+                        <div class="menu-item">Client Usage</div>
+                        <div class="menu-item">Client Usage by Feature</div>
+                        <div class="menu-item">Corlytics Updates</div>
+                    </div>
+                </div>
+
+                <div class="menu-section">
+                    <div class="section-header">
+                        <p class="section-title">Client Management</p>
+                    </div>
+                    <div class="menu-items">
+                        <div class="menu-item">Workflow Routing</div>
+                        <div class="menu-item">Workflow Config</div>
+                        <div class="menu-item">Task Automation</div>
+                        <div class="menu-item">Task Custom Fields</div>
+                        <div class="menu-item">User Groups</div>
+                        <div class="menu-item">Legal Entities</div>
+                        <div class="menu-item">Procedures Config</div>
+                    </div>
+                </div>
+
+                <div class="menu-section">
+                    <div class="section-header">
+                        <p class="section-title">Push Api</p>
+                    </div>
+                    <div class="menu-items">
+                        <div class="menu-item">Push Api Dashboard</div>
+                    </div>
+                </div>
+
+                <div class="menu-section">
+                    <div class="section-header">
+                        <p class="section-title">Reporting System</p>
+                    </div>
+                    <div class="menu-items">
+                        <div class="menu-item">Report Logs</div>
+                        <div class="menu-item">Report Statistics</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <div class="header-content">
+                    <div class="logo-section">
+                        <div class="logo">Corlytics</div>
+                        <div class="divider"></div>
+                        <div class="page-title">Content Workbench</div>
+                    </div>
+                    <div class="header-actions">
+                        <div class="notification-icon">
+                            <svg width="28" height="32" viewBox="0 0 28 32" fill="none">
+                                <path d="M14 0C6.268 0 0 6.268 0 14v8.4c0 1.68-.84 3.36-2.24 4.2L0 28h28l-2.24-1.4C24.36 25.76 23.52 24.08 23.52 22.4V14C23.52 6.268 17.252 0 9.52 0H14z" fill="#212529"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Breadcrumbs -->
+            <div class="breadcrumbs">
+                <div class="breadcrumb-item">
+                    <span class="breadcrumb-link">Home</span>
+                </div>
+                <div class="breadcrumb-separator">
+                    <svg width="4" height="12" viewBox="0 0 4 12" fill="none">
+                        <path d="M0 0l4 6-4 6" stroke="#2c5c65" stroke-width="1"/>
+                    </svg>
+                </div>
+                <div class="breadcrumb-item">
+                    <span class="breadcrumb-link">Select Client</span>
+                </div>
+                <div class="breadcrumb-separator">
+                    <svg width="4" height="12" viewBox="0 0 4 12" fill="none">
+                        <path d="M0 0l4 6-4 6" stroke="#2c5c65" stroke-width="1"/>
+                    </svg>
+                </div>
+                <div class="breadcrumb-item">
+                    <span class="breadcrumb-text">Taxonomy Manager - Map Details</span>
+                </div>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="content-area">
+                <div class="content-header">
+                    <div class="page-navigation">
+                        <span class="nav-link">Map Details</span>
+                        <svg width="5" height="13" viewBox="0 0 5 13" fill="none">
+                            <path d="M0 0l5 6.5L0 13" stroke="#2c5c65" stroke-width="1"/>
+                        </svg>
+                        <span class="nav-link">Documents Mapping</span>
+                        <svg width="5" height="13" viewBox="0 0 5 13" fill="none">
+                            <path d="M0 0l5 6.5L0 13" stroke="#2c5c65" stroke-width="1"/>
+                        </svg>
+                        <span class="nav-link">Reg Category Structure</span>
+                        <svg width="5" height="13" viewBox="0 0 5 13" fill="none">
+                            <path d="M0 0l5 6.5L0 13" stroke="#2c5c65" stroke-width="1"/>
+                        </svg>
+                        <span class="nav-link">Reg Category Mapping</span>
+                        <svg width="5" height="13" viewBox="0 0 5 13" fill="none">
+                            <path d="M0 0l5 6.5L0 13" stroke="#2c5c65" stroke-width="1"/>
+                        </svg>
+                        <span class="nav-link">Service Line Structure</span>
+                        <svg width="5" height="13" viewBox="0 0 5 13" fill="none">
+                            <path d="M0 0l5 6.5L0 13" stroke="#2c5c65" stroke-width="1"/>
+                        </svg>
+                        <span class="nav-link">Service Line Mapping</span>
+                        <svg width="5" height="13" viewBox="0 0 5 13" fill="none">
+                            <path d="M0 0l5 6.5L0 13" stroke="#2c5c65" stroke-width="1"/>
+                        </svg>
+                        <span class="nav-link">Users Assignment</span>
+                    </div>
+                </div>
+
+                <div class="content-body">
+                    <div class="page-info">
+                        <div class="page-subtitle">
+                            <p>Taxonomy mapping (page 1 of 7)</p>
+                        </div>
+                        <div class="page-title">
+                            <h1>Corlytics Global View</h1>
+                        </div>
+                        <div class="page-actions">
+                            <button class="btn btn-secondary">Cancel</button>
+                            <button class="btn btn-primary">Save</button>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn btn-primary">Upload</button>
+                        <button class="btn btn-primary">Export Selected</button>
+                        <button class="btn btn-primary">Export All</button>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="form-group">
+                            <label>Map Name:</label>
+                            <input type="text" class="form-input" value="Corlytics Global View" readonly>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Select Regulators:</label>
+                            <div class="select-container">
+                                <div class="select-input">
+                                    <span>Multiple Selections</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Selected Regulators (2):</label>
+                            <div class="selected-chips">
+                                <div class="chip">
+                                    <span>EU Parliament (EUPARL)</span>
+                                </div>
+                                <div class="chip">
+                                    <span>Austrian Regulator</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="sources-section">
+                        <div class="sources-header">
+                            <span>Sources:</span>
+                            <span class="sources-count">Total selected sources: 2</span>
+                        </div>
+
+                        <!-- European Union Section -->
+                        <div class="region-section">
+                            <div class="region-header">
+                                <div class="region-title">
+                                    <span>European Union</span>
+                                    <div class="alert-badge">
+                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                            <circle cx="10" cy="10" r="10" fill="#fd4748"/>
+                                            <path d="M10 6v4M10 14h.01" stroke="white" stroke-width="2"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="region-content">
+                                <div class="content-header">
+                                    <div class="content-title">
+                                        <span>EU Parliament (EUPARL)</span>
+                                        <div class="alert-badge">
+                                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                                <circle cx="10" cy="10" r="10" fill="#fd4748"/>
+                                                <path d="M10 6v4M10 14h.01" stroke="white" stroke-width="2"/>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div class="content-stats">
+                                        <span>1/4 selected</span>
+                                    </div>
+                                    <div class="content-actions">
+                                        <button class="btn btn-small">Select All</button>
+                                        <button class="btn btn-small btn-danger">Hide</button>
+                                    </div>
+                                </div>
+
+                                <div class="document-list">
+                                    <div class="document-item selected">
+                                        <div class="checkbox checked">
+                                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                                <rect width="16" height="16" rx="2" fill="#1890ff"/>
+                                                <path d="M6 8l2 2 4-4" stroke="white" stroke-width="2"/>
+                                            </svg>
+                                        </div>
+                                        <div class="document-icon">
+                                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                                <path d="M2 2h12v12H2z" stroke="#7c858c" stroke-width="1"/>
+                                                <path d="M6 6h4M6 8h4M6 10h2" stroke="#7c858c" stroke-width="1"/>
+                                            </svg>
+                                        </div>
+                                        <div class="document-title">ACER-CONSULT-C</div>
+                                    </div>
+                                    <div class="document-item">
+                                        <div class="indent"></div>
+                                        <div class="document-title">Acts of freedom & Security and Justice</div>
+                                    </div>
+                                    <div class="document-item">
+                                        <div class="checkbox">
+                                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                                <rect width="16" height="16" rx="2" stroke="#7c858c" stroke-width="1"/>
+                                            </svg>
+                                        </div>
+                                        <div class="document-icon">
+                                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                                <path d="M2 2h12v12H2z" stroke="#7c858c" stroke-width="1"/>
+                                                <path d="M6 6h4M6 8h4M6 10h2" stroke="#7c858c" stroke-width="1"/>
+                                            </svg>
+                                        </div>
+                                        <div class="document-title">European Commission Regulation on Data Protection and Privacy (GDPR) - 2016/679</div>
+                                    </div>
+                                    <div class="document-item">
+                                        <div class="indent"></div>
+                                        <div class="document-title">European Union Agency for Fundamental Rights (FRA) report on Freedom and Security - 2021</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Austria Section -->
+                        <div class="region-section">
+                            <div class="region-header">
+                                <div class="region-title">
+                                    <span>Austria</span>
+                                    <div class="alert-badge">
+                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                            <circle cx="10" cy="10" r="10" fill="#fd4748"/>
+                                            <path d="M10 6v4M10 14h.01" stroke="white" stroke-width="2"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="region-content">
+                                <div class="content-header">
+                                    <div class="content-title">
+                                        <span>Austrian Regulator</span>
+                                        <div class="alert-badge">
+                                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                                <circle cx="10" cy="10" r="10" fill="#fd4748"/>
+                                                <path d="M10 6v4M10 14h.01" stroke="white" stroke-width="2"/>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div class="content-stats">
+                                        <span>1/3 selected</span>
+                                    </div>
+                                    <div class="content-actions">
+                                        <button class="btn btn-small">Select All</button>
+                                        <button class="btn btn-small btn-danger">Hide</button>
+                                    </div>
+                                </div>
+
+                                <div class="document-list">
+                                    <div class="document-item selected">
+                                        <div class="checkbox checked">
+                                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                                <rect width="16" height="16" rx="2" fill="#1890ff"/>
+                                                <path d="M6 8l2 2 4-4" stroke="white" stroke-width="2"/>
+                                            </svg>
+                                        </div>
+                                        <div class="document-icon">
+                                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                                <path d="M2 2h12v12H2z" stroke="#7c858c" stroke-width="1"/>
+                                                <path d="M6 6h4M6 8h4M6 10h2" stroke="#7c858c" stroke-width="1"/>
+                                            </svg>
+                                        </div>
+                                        <div class="document-title">ACER-CONSULT-C</div>
+                                    </div>
+                                    <div class="document-item">
+                                        <div class="indent"></div>
+                                        <div class="document-title">Acts of freedom & Security and Justice</div>
+                                    </div>
+                                    <div class="document-item">
+                                        <div class="checkbox">
+                                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                                <rect width="16" height="16" rx="2" stroke="#7c858c" stroke-width="1"/>
+                                            </svg>
+                                        </div>
+                                        <div class="document-icon">
+                                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                                <path d="M2 2h12v12H2z" stroke="#7c858c" stroke-width="1"/>
+                                            </svg>
+                                        </div>
+                                        <div class="document-title">European Commission Regulation on Data Protection and Privacy (GDPR) - 2016/679</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="pagination">
+                        <button class="pagination-btn">«</button>
+                        <button class="pagination-btn">⟨</button>
+                        <button class="pagination-btn active">1</button>
+                        <button class="pagination-btn">2</button>
+                        <button class="pagination-btn">3</button>
+                        <div class="pagination-ellipsis">...</div>
+                        <button class="pagination-btn">50</button>
+                        <button class="pagination-btn">⟩</button>
+                        <button class="pagination-btn">»</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="footer">
+                <div class="footer-content">
+                    <span>© </span>
+                    <a href="#" class="footer-link">Corlytics</a>
+                    <span> 2025</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple JavaScript for basic interactivity
+        document.addEventListener('DOMContentLoaded', function() {
+            // Checkbox functionality
+            const checkboxes = document.querySelectorAll('.checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('click', function() {
+                    const documentItem = this.closest('.document-item');
+                    if (documentItem) {
+                        documentItem.classList.toggle('selected');
+                        this.classList.toggle('checked');
+                    }
+                });
+            });
+
+            // Button click handlers
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(button => {
+                button.addEventListener('click', function() {
+                    console.log('Button clicked:', this.textContent);
+                });
+            });
+
+            // Menu item click handlers
+            const menuItems = document.querySelectorAll('.menu-item');
+            menuItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    console.log('Menu item clicked:', this.textContent);
+                });
+            });
+        });
+    </script>
+</body>
+</html> 
