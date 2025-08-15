@@ -146,7 +146,43 @@ const CorlyticsDashboard: React.FC = () => {
 
   const handleButtonClick = (action: string): void => {
     console.log(`Button clicked: ${action}`)
-    // Add button action logic here
+    
+    if (action === 'Save') {
+      // Save all current state to localStorage
+      const stateToSave = {
+        selectedRegulators,
+        selectedDocuments: Array.from(selectedDocuments),
+        mapName,
+        expandedSections,
+        hiddenSections: Array.from(hiddenSections),
+        currentPage,
+        timestamp: new Date().toISOString()
+      }
+      
+      localStorage.setItem('corlyticsDashboardState', JSON.stringify(stateToSave))
+      console.log('State saved:', stateToSave)
+      
+      // Show success message
+      alert('All changes have been saved successfully!')
+    } else if (action === 'Cancel') {
+      // Clear saved state and reset to defaults
+      if (confirm('Are you sure you want to cancel? This will clear all saved data and reset to defaults.')) {
+        localStorage.removeItem('corlyticsDashboardState')
+        
+        // Reset all state to defaults
+        setSelectedRegulators(['EU Parliament (EUPARL)', 'Austrian Regulator'])
+        setSelectedDocuments(new Set())
+        setMapName('Corlytics Global View')
+        setExpandedSections({
+          'European Union': true,
+          'Austria': true
+        })
+        setHiddenSections(new Set())
+        setCurrentPage(1)
+        
+        alert('All data has been cleared and reset to defaults.')
+      }
+    }
   }
 
   const toggleRegulator = (regulator: string): void => {
@@ -199,6 +235,40 @@ const CorlyticsDashboard: React.FC = () => {
   useEffect(() => {
     setCurrentPage(1)
   }, [selectedRegulators])
+
+  // Load saved state on component mount
+  useEffect(() => {
+    const savedState = localStorage.getItem('corlyticsDashboardState')
+    if (savedState) {
+      try {
+        const parsedState = JSON.parse(savedState)
+        
+        // Restore all saved state
+        if (parsedState.selectedRegulators) {
+          setSelectedRegulators(parsedState.selectedRegulators)
+        }
+        if (parsedState.selectedDocuments) {
+          setSelectedDocuments(new Set(parsedState.selectedDocuments))
+        }
+        if (parsedState.mapName) {
+          setMapName(parsedState.mapName)
+        }
+        if (parsedState.expandedSections) {
+          setExpandedSections(parsedState.expandedSections)
+        }
+        if (parsedState.hiddenSections) {
+          setHiddenSections(new Set(parsedState.hiddenSections))
+        }
+        if (parsedState.currentPage) {
+          setCurrentPage(parsedState.currentPage)
+        }
+        
+        console.log('State restored:', parsedState)
+      } catch (error) {
+        console.error('Error loading saved state:', error)
+      }
+    }
+  }, [])
 
   const europeanUnionDocuments: DocumentItem[] = [
     { id: 'acer-consult-c', title: 'ACER-CONSULT-C', selected: false, indented: false },
@@ -317,7 +387,7 @@ const CorlyticsDashboard: React.FC = () => {
   const renderRegionSection = (regionName: string, regulator: string, documents: DocumentItem[], selectedCount: number, totalCount: number) => {
     return (
       <div key={regionName} className="region-section">
-        <div className="region-header" onClick={() => toggleSection(regionName)}>
+        <div className="region-header">
           <div className="region-title">
             <span>{regionName}</span>
             <div className="alert-badge">
@@ -381,7 +451,10 @@ const CorlyticsDashboard: React.FC = () => {
           <div className="region-content-hidden">
             <div className="content-header-hidden">
               <div className="content-title-hidden">
-                <span>{regulator}</span>
+                <div className="region-name-hidden">{regulator}</div>
+                <div className="region-document-count-hidden">
+                  {selectedCount} of {totalCount} documents selected
+                </div>
                 <div className="alert-badge">
                   <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                     <circle cx="10" cy="10" r="10" fill="#fd4748"/>
@@ -596,11 +669,8 @@ const CorlyticsDashboard: React.FC = () => {
             </div>
             <div className="header-actions">
               <div className="settings-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  {/* Main gear body with 10 rectangular teeth */}
-                  <path d="M12 2L13.5 4.5L15.5 4.5L16.5 6.5L18.5 6.5L19.5 8.5L21.5 8.5L22.5 10.5L24 12L22.5 13.5L21.5 15.5L19.5 15.5L18.5 17.5L16.5 17.5L15.5 19.5L13.5 19.5L12 22L10.5 19.5L8.5 19.5L7.5 17.5L5.5 17.5L4.5 15.5L2.5 15.5L1.5 13.5L0 12L1.5 10.5L2.5 8.5L4.5 8.5L5.5 6.5L7.5 6.5L8.5 4.5L10.5 4.5L12 2Z" fill="#2c5c65"/>
-                  {/* Central white hole */}
-                  <circle cx="12" cy="12" r="3" fill="white"/>
+                <svg width="28" height="32" viewBox="0 0 28 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M17.5172 19.2322C17.5172 19.2322 17.7404 19.0089 18.1868 18.5625C18.6332 18.1161 18.8564 17.2619 18.8564 16C18.8564 14.7381 18.41 13.6607 17.5172 12.7679C16.6243 11.875 15.5469 11.4286 14.285 11.4286C13.0231 11.4286 11.9457 11.875 11.0529 12.7679C10.16 13.6607 9.71358 14.7381 9.71358 16C9.71358 17.2619 10.16 18.3393 11.0529 19.2322C11.9457 20.125 13.0231 20.5714 14.285 20.5714C15.5469 20.5714 16.6243 20.125 17.5172 19.2322ZM27.9993 14.0536V18.0179C27.9993 18.1607 27.9517 18.2976 27.8564 18.4286C27.7612 18.5595 27.6422 18.6369 27.4993 18.6607L24.1957 19.1607C23.9695 19.8036 23.7374 20.3452 23.4993 20.7857C23.916 21.381 24.5529 22.2024 25.41 23.25C25.5291 23.3929 25.5886 23.5417 25.5886 23.6964C25.5886 23.8512 25.535 23.9881 25.4279 24.1072C25.1064 24.5476 24.5172 25.1905 23.66 26.0357C22.8029 26.881 22.2433 27.3036 21.9814 27.3036C21.8386 27.3036 21.6838 27.25 21.5172 27.1429L19.0529 25.2143C18.5291 25.4881 17.9874 25.7143 17.4279 25.8929C17.2374 27.5119 17.0648 28.6191 16.91 29.2143C16.8267 29.5476 16.6124 29.7143 16.2672 29.7143H12.3029C12.1362 29.7143 11.9904 29.6637 11.8654 29.5625C11.7404 29.4613 11.6719 29.3333 11.66 29.1786L11.16 25.8929C10.5767 25.7024 10.041 25.4822 9.55287 25.2322L7.03501 27.1429C6.91596 27.25 6.76715 27.3036 6.58858 27.3036C6.42192 27.3036 6.27311 27.2381 6.14215 27.1072C4.64215 25.75 3.66001 24.75 3.19572 24.1072C3.11239 23.9881 3.07072 23.8512 3.07072 23.6964C3.07072 23.5536 3.11834 23.4167 3.21358 23.2857C3.39215 23.0357 3.69572 22.6399 4.1243 22.0982C4.55287 21.5566 4.8743 21.1369 5.08858 20.8393C4.76715 20.2441 4.52311 19.6548 4.35644 19.0714L1.08858 18.5893C0.93382 18.5655 0.80882 18.4911 0.713582 18.3661C0.618344 18.2411 0.570724 18.1012 0.570724 17.9464V13.9822C0.570724 13.8393 0.618344 13.7024 0.713582 13.5714C0.80882 13.4405 0.921915 13.3631 1.05287 13.3393L4.3743 12.8393C4.54096 12.2917 4.77311 11.7441 5.07072 11.1964C4.59453 10.5179 3.95763 9.69644 3.16001 8.73215C3.04096 8.58929 2.98144 8.44644 2.98144 8.30358C2.98144 8.18453 3.03501 8.04763 3.14215 7.89286C3.45168 7.46429 4.03799 6.82441 4.90108 5.97322C5.76418 5.12203 6.32668 4.69644 6.58858 4.69644C6.74334 4.69644 6.89811 4.75596 7.05287 4.87501L9.51715 6.78572C10.041 6.51191 10.5826 6.28572 11.1422 6.10715C11.3326 4.4881 11.5052 3.38096 11.66 2.78572C11.7433 2.45239 11.9576 2.28572 12.3029 2.28572H16.2672C16.4338 2.28572 16.5797 2.33632 16.7047 2.43751C16.8297 2.5387 16.8981 2.66667 16.91 2.82144L17.41 6.10715C17.9933 6.29763 18.5291 6.51786 19.0172 6.76786L21.5529 4.85715C21.66 4.75001 21.8029 4.69644 21.9814 4.69644C22.1362 4.69644 22.285 4.75596 22.4279 4.87501C23.9636 6.29167 24.9457 7.30358 25.3743 7.91072C25.4576 8.00596 25.4993 8.13691 25.4993 8.30358C25.4993 8.44644 25.4517 8.58334 25.3564 8.71429C25.1779 8.96429 24.8743 9.36013 24.4457 9.90179C24.0172 10.4435 23.6957 10.8631 23.4814 11.1607C23.791 11.756 24.035 12.3393 24.2136 12.9107L27.4814 13.4107C27.6362 13.4345 27.7612 13.5089 27.8564 13.6339C27.9517 13.7589 27.9993 13.8988 27.9993 14.0536Z" fill="#2C5C65"/>
                 </svg>
               </div>
             </div>
@@ -843,33 +913,93 @@ const CorlyticsDashboard: React.FC = () => {
                 </button>
                 
                 {/* Page numbers */}
-                {Array.from({ length: totalPages }, (_, index) => {
-                  const pageNumber = index + 1
-                  const isActive = pageNumber === currentPage
+                {(() => {
+                  const pages = []
+                  const maxVisiblePages = 5
                   
-                  // Show first page, last page, current page, and pages around current
-                  if (
-                    pageNumber === 1 || 
-                    pageNumber === totalPages || 
-                    (pageNumber >= currentPage - 1 && pageNumber <= currentPage + 1)
-                  ) {
-                    return (
+                  if (totalPages <= maxVisiblePages) {
+                    // Show all pages if total is 5 or less
+                    for (let i = 1; i <= totalPages; i++) {
+                      pages.push(
+                        <button 
+                          key={i}
+                          className={`pagination-btn ${i === currentPage ? 'active' : ''}`}
+                          onClick={() => handlePageChange(i)}
+                        >
+                          {i}
+                        </button>
+                      )
+                    }
+                  } else {
+                    // Always show first page
+                    pages.push(
                       <button 
-                        key={pageNumber}
-                        className={`pagination-btn ${isActive ? 'active' : ''}`}
-                        onClick={() => handlePageChange(pageNumber)}
+                        key={1}
+                        className={`pagination-btn ${1 === currentPage ? 'active' : ''}`}
+                        onClick={() => handlePageChange(1)}
                       >
-                        {pageNumber}
+                        1
                       </button>
                     )
-                  } else if (
-                    pageNumber === currentPage - 2 || 
-                    pageNumber === currentPage + 2
-                  ) {
-                    return <div key={pageNumber} className="pagination-ellipsis">...</div>
+                    
+                    // Calculate range to show around current page
+                    let startPage = Math.max(2, currentPage - 1)
+                    let endPage = Math.min(totalPages - 1, currentPage + 1)
+                    
+                    // Adjust if we're near the beginning
+                    if (currentPage <= 3) {
+                      endPage = Math.min(totalPages - 1, 4)
+                    }
+                    
+                    // Adjust if we're near the end to keep current page centered
+                    if (currentPage >= totalPages - 2) {
+                      startPage = Math.max(2, totalPages - 3)
+                      endPage = totalPages - 1
+                    }
+                    
+                    // Special case for last page to ensure it's centered
+                    if (currentPage === totalPages) {
+                      startPage = Math.max(2, totalPages - 2)
+                      endPage = totalPages - 1
+                    }
+                    
+                    // Add ellipsis after first page if needed
+                    if (startPage > 2) {
+                      pages.push(<div key="ellipsis1" className="pagination-ellipsis">...</div>)
+                    }
+                    
+                    // Add pages around current page
+                    for (let i = startPage; i <= endPage; i++) {
+                      pages.push(
+                        <button 
+                          key={i}
+                          className={`pagination-btn ${i === currentPage ? 'active' : ''}`}
+                          onClick={() => handlePageChange(i)}
+                        >
+                          {i}
+                        </button>
+                      )
+                    }
+                    
+                    // Add ellipsis before last page if needed
+                    if (endPage < totalPages - 1) {
+                      pages.push(<div key="ellipsis2" className="pagination-ellipsis">...</div>)
+                    }
+                    
+                    // Always show last page
+                    pages.push(
+                      <button 
+                        key={totalPages}
+                        className={`pagination-btn ${totalPages === currentPage ? 'active' : ''}`}
+                        onClick={() => handlePageChange(totalPages)}
+                      >
+                        {totalPages}
+                      </button>
+                    )
                   }
-                  return null
-                })}
+                  
+                  return pages
+                })()}
                 
                 {/* Next page */}
                 <button 
